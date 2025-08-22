@@ -5,8 +5,15 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --noinput || true
     startCommand: |
-      python manage.py migrate --noinput && \
-      python manage.py ensure_superuser && \
+      # Attente DB + migrations (5 tentatives, 5s d'intervalle)
+      for i in 1 2 3 4 5; do
+        python manage.py migrate --noinput && break
+        echo "DB pas prête, on retente dans 5s... ($i/5)"
+        sleep 5
+      done
+      # Création admin (n'empêche pas le boot si ça échoue)
+      python manage.py ensure_superuser || true
+      # Lancer le serveur ASGI
       daphne -b 0.0.0.0 -p $PORT app.asgi:application
     autoDeploy: true
     envVars:
