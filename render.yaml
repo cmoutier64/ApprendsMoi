@@ -28,4 +28,3 @@ services:
 databases:
   - name: app-db
     plan: free
-    diskSizeGB: 1
