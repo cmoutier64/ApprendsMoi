@@ -32,3 +32,16 @@ TIME_ZONE='Europe/Paris'
 USE_I18N=True
 USE_TZ=True
 DEFAULT_AUTO_FIELD='django.db.models.BigAutoField'
+
+# Autoriser automatiquement l'hôte Render (ex: myapp.onrender.com)
+RENDER_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_HOST:
+    ALLOWED_HOSTS = list(set(ALLOWED_HOSTS + [RENDER_HOST]))
+
+# Django derrière proxy HTTPS (Render)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# CSRF sur domaine Render (évite des 403 au login/POST)
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+]
